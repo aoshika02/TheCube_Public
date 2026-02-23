@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbc2aaf2a7c286743a647e7bb35feef0, type: 3}
+  m_Name: TileInitDatas
+  m_EditorClassIdentifier: 
+  FrameTexture: {fileID: 2800000, guid: a45dcfd201f1ce848a5fce1e5d532b27, type: 3}
+  TileInitDataList:
+  - TileType: 1
+    IconTexture: {fileID: 2800000, guid: e9f18f1d6b8c957468c4f06705d0f6a9, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 1, g: 0.58679235, b: 0.58679235, a: 1}
+    IconColor: {r: 1, g: 0.58679235, b: 0.58679235, a: 1}
+  - TileType: 3
+    IconTexture: {fileID: 2800000, guid: 8560b366913f44340bd7c5883ab8d938, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 2
+    IconTexture: {fileID: 2800000, guid: 402ff7975ae7434468fb51397e8ef5e4, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 4
+    IconTexture: {fileID: 2800000, guid: 771b4389c2004cf4e83f9ceaf30ab3f8, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 0
+    IconTexture: {fileID: 0}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 7
+    IconTexture: {fileID: 2800000, guid: 73caa1613ea56924bb6cd55586b56e69, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 8
+    IconTexture: {fileID: 2800000, guid: 5a4c582a5cbdc4248a6dca2194a5cc4d, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 5
+    IconTexture: {fileID: 2800000, guid: da547dc2a3a07f84183cd3b3c09bc15d, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 6
+    IconTexture: {fileID: 2800000, guid: 18ab93cfd46301e41ac5e4b2204852e7, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 9
+    IconTexture: {fileID: 2800000, guid: cf0434608ca17574a9676a4f679f65b9, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 10
+    IconTexture: {fileID: 2800000, guid: def45f39a4855ba4bbd139fab4e00d2d, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 11
+    IconTexture: {fileID: 2800000, guid: fb13423d61f96ea4a92caa98b090372b, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}
+  - TileType: 12
+    IconTexture: {fileID: 2800000, guid: 3994105a1a67cfa4ea568afc7e34c68d, type: 3}
+    BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    FrameColor: {r: 0, g: 0, b: 0, a: 1}
+    IconColor: {r: 0, g: 0, b: 0, a: 1}

@@ -1,0 +1,74 @@
+{ "TextDataList" : [
+
+  {
+		"Type": "Message", 
+		"DialogEventType": "DeleteSaveData", 
+		"Message": "セーブデータを削除しました"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Normal", 
+		"Message": ""
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Goal", 
+		"Message": "キューブが目指す終着点"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Skip", 
+		"Message": "このタイルではキューブタイルを展開しない"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Reset", 
+		"Message": "展開済みのキューブタイルをすべて回収する"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Warp", 
+		"Message": "他のワープタイルに移動する"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Arrow", 
+		"Message": "矢印の方向に進む"
+  },
+
+  {
+		"Type": "Message", 
+		"DialogEventType": "Tutorial01", 
+		"Message": "TheCubeの世界へようこそ"
+  },
+
+  {
+		"Type": "Message", 
+		"DialogEventType": "Tutorial02", 
+		"Message": "キューブは可能性のカタマリです"
+  },
+
+  {
+		"Type": "Message", 
+		"DialogEventType": "Tutorial03", 
+		"Message": "キューブはタイルを展開することで進むことができます"
+  },
+
+  {
+		"Type": "Message", 
+		"DialogEventType": "Tutorial04", 
+		"Message": "キューブが終着点へ到達できるように導いてください"
+  },
+
+  {
+		"Type": "Info", 
+		"DialogEventType": "Jump", 
+		"Message": "キューブがタイル１つ分を飛び越える"
+  }
+]}

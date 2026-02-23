@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c2d8fd22e616745b6c04e6032fa560, type: 3}
+  m_Name: StageDatas
+  m_EditorClassIdentifier: 
+  StageDataList:
+  - StageID: 0
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: e504d82ecbab9b64d90bc14ea285b93c, type: 3}
+  - StageID: 1
+    StartID: 2
+    StageJson: {fileID: 4900000, guid: 0a55ae92f7da7e048a8bbe4d5a4c1753, type: 3}
+  - StageID: 2
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: e1ee95ce31c3aea4ab7bb9b987978414, type: 3}
+  - StageID: 3
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: c1fbf1f772745444fa336b8f4ca2a991, type: 3}
+  - StageID: 4
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: e0886adbbd4238647a0dd0b22bf5fdc5, type: 3}
+  - StageID: 5
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: 7a8ebdd74ac811e488915e5093180664, type: 3}
+  - StageID: 6
+    StartID: 3
+    StageJson: {fileID: 4900000, guid: 277d211b5ea28b34b8190324906b9d72, type: 3}
+  - StageID: 7
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: 65fb30332a3b74045925bac184cc877d, type: 3}
+  - StageID: 8
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: 2bbef2b12f61cdf4c9c967a0d68693c4, type: 3}
+  - StageID: 9
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: e5f9d7f3404cae24cbddb5bd15b984ea, type: 3}
+  - StageID: 10
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: 33481dfab275d0441a22d1a1dc7168e7, type: 3}
+  - StageID: 11
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: cb88b5b6458132146a5e14cb7c986dde, type: 3}
+  - StageID: 12
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: 7cf78c15438b38f48af8643474e16fc4, type: 3}
+  - StageID: 13
+    StartID: 0
+    StageJson: {fileID: 4900000, guid: f117f8199ffb67a4fb92886b60258322, type: 3}

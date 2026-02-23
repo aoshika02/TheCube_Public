@@ -1,0 +1,6 @@
+{"map": [
+  ["Normal", "JumpUp", "None", "Normal"],
+  ["Normal", "Normal", "Normal", "Normal"],
+  ["Normal", "Normal", "None", "Normal"],
+  ["Normal", "Normal", "None", "Goal"]
+]}

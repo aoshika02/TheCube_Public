@@ -1,0 +1,8 @@
+{"map": [
+  ["Normal", "Warp", "Normal"],
+  ["Normal", "Normal", "Normal"],
+  ["Warp", "Normal", "Normal"],
+  ["Normal", "Normal", "Normal"],
+  ["Normal", "Normal", "Normal"],
+  ["Goal", "Normal", "Normal"]
+]}
