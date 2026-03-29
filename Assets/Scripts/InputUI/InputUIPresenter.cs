@@ -55,11 +55,6 @@ public class InputUIPresenter : MonoBehaviour
             _inputUIView.UpdateActive(activeData);
         }).AddTo(this);
 
-        _inputUIModel.OnChangeMovableData.Subscribe(movableData =>
-        {
-            _inputUIView.UpdateMovable(movableData);
-        }).AddTo(this);
-
         _gameStateManager.OnInputUIRefresh.Subscribe(_ =>
         {
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;

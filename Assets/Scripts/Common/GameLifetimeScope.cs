@@ -181,6 +181,8 @@ public class GameLifetimeScope : LifetimeScope
             var locator = new InputUIDataLocator(new EmptyInputUICommand());
             locator.Register(GameState.StageSelectIdle, new StageSelectInputUICommand(stageSelectModel));
             locator.Register(GameState.InGameIdle,      new InGameInputUICommand(playerCube, tileManager,playerMoveProcessor));
+            locator.Register(GameState.StageSelectInit, new OtherInputData());
+            locator.Register(GameState.InGameInit,      new OtherInputData());
             return locator;
         }, Lifetime.Singleton);
     }

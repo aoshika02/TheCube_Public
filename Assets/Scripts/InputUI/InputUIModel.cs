@@ -7,9 +7,6 @@ public class InputUIModel
     public Observable<InputUIActiveData> OnChangeActiveData => _onChangeActiveData;
     private Subject<InputUIActiveData> _onChangeActiveData = new Subject<InputUIActiveData>();
 
-    public Observable<InputUIMovableData> OnChangeMovableData => _onChangeMovableData;
-    private Subject<InputUIMovableData> _onChangeMovableData = new Subject<InputUIMovableData>();
-
     public void UpdateActive(GameState gameState)
     {
         switch (gameState)
