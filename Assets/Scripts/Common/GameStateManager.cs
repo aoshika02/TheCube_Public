@@ -1,0 +1,56 @@
+using R3;
+public class GameStateManager
+{
+    public ReadOnlyReactiveProperty<GameState> State => _gameState;
+    private ReactiveProperty<GameState> _gameState = new ReactiveProperty<GameState>();
+
+    public ReadOnlyReactiveProperty<GameInputState> InputState => _gameInputState;
+    private ReactiveProperty<GameInputState> _gameInputState = new ReactiveProperty<GameInputState>();
+
+    public Observable<Unit> OnInputUIRefresh => _onInputUIRefresh;
+    private Subject<Unit> _onInputUIRefresh = new Subject<Unit>();
+
+    public GameStateManager()
+    {
+        _gameState = new ReactiveProperty<GameState>(GameState.None);
+        _gameInputState = new ReactiveProperty<GameInputState>(GameInputState.None);
+    }
+
+    public void ChangeState(GameState newState)
+    {
+        _gameState.Value = newState;
+    }
+
+    public void SetInputState(GameInputState newInputState)
+    {
+        _gameInputState.Value = newInputState;
+    }
+
+    public void RequestInputUIRefresh()
+    {
+        _onInputUIRefresh.OnNext(Unit.Default);
+    }
+}
+public enum GameState
+{
+    None,
+    TitleInit,
+    TitleIdle,
+    TitleShutdown,
+    StageSelectInit,
+    StageSelectIdle,
+    StageSelectShutdown,
+    InGameInit,
+    InGameIdle,
+    InGameShutdown,
+    InGameReset,
+}
+
+public enum GameInputState
+{
+    None,
+    Other,
+    Dialog,
+    Moving
+}
+

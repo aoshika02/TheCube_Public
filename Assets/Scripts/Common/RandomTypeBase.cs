@@ -5,25 +5,25 @@ public static class RandomTypeBase
 {
     public static List<T> ShuffleList<T>(List<T> list)
     {
-        List<T> returnlist = new List<T>(list);
-        for (int i = returnlist.Count - 1; i > 0; i--)
+        List<T> returnList = new List<T>(list);
+        for (int i = returnList.Count - 1; i > 0; i--)
         {
             int randomIndex = Random.Range(0, i + 1);
-            (returnlist[i], returnlist[randomIndex]) = (returnlist[randomIndex], returnlist[i]);
+            (returnList[i], returnList[randomIndex]) = (returnList[randomIndex], returnList[i]);
         }
-        return returnlist;
+        return returnList;
     }
     public static List<T> MakeListByCount<T>(List<T> list, int repeatCount = 1)
     {
-        List<T> returnlist = new List<T>();
+        List<T> returnList = new List<T>();
         foreach (T item in list)
         {
             for (int i = 0; i < repeatCount; i++)
             {
-                returnlist.Add(item);
+                returnList.Add(item);
             }
         }
-        return returnlist;
+        return returnList;
     }
     public static void FillQueueFromList<T>(Queue<T> queue, List<T> list)
     {
@@ -46,7 +46,7 @@ public static class RandomTypeBase
         {
             FillQueueFromList(targetType, ShuffleList(MakeListByCount(list, repeatCount)));
         }
-        List<T> returnlist = new List<T>();
+        List<T> returnList = new List<T>();
         if (isMix)
         {
             for (int i = 0; i < count; i++)
@@ -55,7 +55,7 @@ public static class RandomTypeBase
                 {
                     FillQueueFromList(targetType, ShuffleList(MakeListByCount(list, repeatCount)));
                 }
-                returnlist.Add(targetType.Dequeue());
+                returnList.Add(targetType.Dequeue());
             }
         }
         else
@@ -63,10 +63,10 @@ public static class RandomTypeBase
             T type = targetType.Dequeue();
             for (int i = 0; i < count; i++)
             {
-                returnlist.Add(type);
+                returnList.Add(type);
             }
         }
-        return returnlist;
+        return returnList;
     }
 }
 

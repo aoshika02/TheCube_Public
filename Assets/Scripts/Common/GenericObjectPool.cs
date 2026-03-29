@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class GenericObjectPool<T> where T : MonoBehaviour, IPool
@@ -47,7 +46,10 @@ public class GenericObjectPool<T> where T : MonoBehaviour, IPool
     {
         foreach (var instance in _instances)
         {
-            Release(instance);
+            if (instance.IsGenericUse)
+            {
+                Release(instance);
+            }
         }
     }
 }

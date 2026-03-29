@@ -1,52 +1,69 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UniRx;
-using System;
-using Extension;
+using R3;
+using VContainer;
 
-public class PlayerMoveInput : SingletonMonoBehaviour<PlayerMoveInput>
+public class PlayerMoveInput : MonoBehaviour
 {
-    private Vector2Int _moveInput;
-    public IObservable<Vector2Int> OnMoveInput => _onMoveInput;
-    private readonly Subject<Vector2Int> _onMoveInput = new Subject<Vector2Int>();
+    private GameStateManager _gameStateManager;
+    private InputManager _inputManager;
+    private PlayerMoveProcessor _playerMoveProcessor;
 
-    protected override void Awake()
+    [Inject]
+    public void Construct(
+        GameStateManager gameStateManager,
+        InputManager inputManager,
+        PlayerMoveProcessor playerMoveProcessor)
     {
-        if (!CheckInstance()) return;
+        _gameStateManager = gameStateManager;
+        _playerMoveProcessor = playerMoveProcessor;
+        _inputManager = inputManager;
+        Bind();
     }
-    private void Start()
+    private void Bind()
     {
-        InputManager.Instance.KeyW.Subscribe(_ =>
+        _inputManager.KeyW.Subscribe(async _ =>
         {
             if (_ != 1) return;
-            OnInput(ArrowType.Up);
+            await OnInput(Vector2Int.up);
         }).AddTo(this);
 
-        InputManager.Instance.KeyS.Subscribe(_ =>
+        _inputManager.KeyS.Subscribe(async _ =>
         {
             if (_ != 1) return;
-            OnInput(ArrowType.Down);
+            await OnInput(Vector2Int.down);
         }).AddTo(this);
 
-        InputManager.Instance.KeyA.Subscribe(_ =>
+        _inputManager.KeyA.Subscribe(async _ =>
         {
             if (_ != 1) return;
-            OnInput(ArrowType.Left);
+            await OnInput(Vector2Int.left);
         }).AddTo(this);
 
-        InputManager.Instance.KeyD.Subscribe(_ =>
+        _inputManager.KeyD.Subscribe(async _ =>
         {
             if (_ != 1) return;
-            OnInput(ArrowType.Right);
+            await OnInput(Vector2Int.right);
         }).AddTo(this);
     }
-    private void OnInput(ArrowType arrowType)
+
+    private async UniTask OnInput(Vector2Int moveDir)
     {
-        _moveInput = arrowType.Arrow2Vector2Int();
-        if (_moveInput != Vector2Int.zero)
+        if (_gameStateManager.State.CurrentValue != GameState.InGameIdle) return;
+        if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
+        _gameStateManager.SetInputState(GameInputState.Moving);
+        var result = await _playerMoveProcessor.OnMove(moveDir, destroyCancellationToken);
+        switch(result)
         {
-            _onMoveInput.OnNext(_moveInput);
-            _moveInput = Vector2Int.zero;
+            case ResultType.None:
+                _gameStateManager.SetInputState(GameInputState.Other);
+                break;
+            case ResultType.Goal:
+                _gameStateManager.ChangeState(GameState.InGameShutdown);
+                break;
+            case ResultType.Reset:
+                _gameStateManager.ChangeState(GameState.InGameReset);
+                break;
         }
     }
 }

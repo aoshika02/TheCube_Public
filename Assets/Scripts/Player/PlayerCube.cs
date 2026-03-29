@@ -1,85 +1,151 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using VContainer;
 
-public partial class PlayerCube : SingletonMonoBehaviour<PlayerCube>
+public class PlayerCube : MonoBehaviour
 {
     [SerializeField] private Transform _rotateParent;
     [SerializeField] private Transform _unRotateParent;
     [SerializeField] private Transform _reverseRotateParent;
-    [SerializeField] private DirectionType _currentBottomDir = DirectionType.Bottom;
-    // 一回あたりの移動距離
-    [SerializeField] private float _moveDistance = 1f;
-    private List<DirectionType> _detachmentTypes = new List<DirectionType>();
-    private List<MoveData> _moveDatas = new List<MoveData>();
-    private List<bool> _detachmentFlags = new List<bool>();
-    private Vector2Int _lastDir = Vector2Int.zero;
-    private bool _isMoving = false;
-    
-    public Vector3 GetPlayerPos()
+    [SerializeField] private Color _defaultColor;           //006BFF
+    [SerializeField] private Color _lastAttachmentColor;    //FF05AA
+    [SerializeField] private Color _detachmentColor;        //FF1700
+    [SerializeField] private List<CubeFace> _playerFaces = new List<CubeFace>();
+    public DirectionType CurrentBottomDir => DirectionUtil.GetBottomDirection(_rotateParent.rotation);
+
+    private readonly Dictionary<DirectionType, CubeFace> _faceDict = new Dictionary<DirectionType, CubeFace>();
+    private readonly Dictionary<ParentType, Transform> _parentDict = new Dictionary<ParentType, Transform>();
+    private readonly Dictionary<ColorType, Color> _colorDict = new Dictionary<ColorType, Color>();
+
+    [Inject]
+    public void Construct()
     {
-        return _rotateParent.position;
+        Init();
     }
 
-    public void SetPos(Vector3 pos)
+    private void Init()
     {
-        _rotateParent.position = pos;
+        InitTilePos();
+        InitDict();
     }
 
-    #region リセット関係メソッド
-    public void Clear(Vector3 pos, Quaternion rot, bool isResetBases = false)
+    public void InitTilePos()
     {
-        // 位置と回転をリセット
-        _rotateParent.position = pos;
-        _rotateParent.rotation = rot;
-        _reverseRotateParent.position = pos;
-        _reverseRotateParent.rotation = rot;
+        _playerFaces.ForEach(x => x.Init());
+    }
 
-        if (isResetBases)
+    #region Dictionaryメソッド
+    private void InitDict()
+    {
+        _colorDict[ColorType.Default] = _defaultColor;
+        _colorDict[ColorType.LastAttachment] = _lastAttachmentColor;
+        _colorDict[ColorType.Detachment] = _detachmentColor;
+        _parentDict[ParentType.Rotate] = _rotateParent;
+        _parentDict[ParentType.UnRotate] = _unRotateParent;
+        _parentDict[ParentType.ReverseRotate] = _reverseRotateParent;
+
+        foreach (var face in _playerFaces)
         {
-            ResetAllCubeTile();
+            _faceDict.TryAdd(face.DirectionType, face);
         }
-        Clear();
     }
 
-    public void Clear()
+    public CubeFace GetCubeFace(DirectionType type)
     {
-        // 移動履歴をリセット
-        _moveDatas.Clear();
-        _detachmentFlags.Clear();
-        _detachmentTypes.Clear();
-        _lastDir = Vector2Int.zero;
-        _currentBottomDir = DirectionUtil.GetBottomDirection(_rotateParent.rotation);
+        if (_faceDict.TryGetValue(type, out var face))
+        {
+            return face;
+        }
+        return null;
+    }
+
+    public Transform GetParent(ParentType type)
+    {
+        if (_parentDict.TryGetValue(type, out var parent))
+        {
+            return parent;
+        }
+        return null;
+    }
+
+    private Color GetColor(ColorType type)
+    {
+        if (_colorDict.TryGetValue(type, out var color))
+        {
+            return color;
+        }
+        return Color.white;
+    }
+
+    #endregion
+
+    #region 色変更関係メソッド
+
+    public void ChangeCubeBaseColor(List<MoveInfo> moveInfos, int index, ColorType colorType)
+    {
+
+        if (moveInfos.Count > index)
+        {
+            var moveInfo = moveInfos[moveInfos.Count - 1 - index];
+            if (moveInfo != null)
+                ChangeCubeBaseColor(moveInfo.DetachmentType, colorType);
+        }
+    }
+
+    public void ChangeCubeBaseColor(DirectionType type, ColorType colorType)
+    {
+        var color = GetColor(colorType);
+        _playerFaces.FirstOrDefault(x => x.DirectionType == type)?.SetColor(color);
     }
     #endregion
-}
 
-
-public class MoveData
-{
-    public DirectionType DetachmentType;
-    public Vector2Int MoveDir;
-    public Vector3 TargetPosition;
-    public Quaternion TargetRotation;
-    public TileType TileType;
-
-    public MoveData(DirectionType directionType, Vector2Int moveDir, Vector3 targetPos, Quaternion targetRot, TileType tileType)
+    #region 面離脱メソッド
+    public void Detachments(List<DirectionType> detachTypes)
     {
-        DetachmentType = directionType;
-        MoveDir = moveDir;
-        TargetPosition = targetPos;
-        TargetRotation = targetRot;
-        TileType = tileType;
+        foreach (var directionType in detachTypes)
+        {
+            Detachment(ParentType.Rotate, directionType);
+        }
     }
-}
 
-public record MoveResult
-{
-    public bool IsSuccess;
-    public DirectionType DetachmentType;
-
-    public MoveResult(bool isSuccess, DirectionType detachmentType)
+    public void Detachment(ParentType parentType, DirectionType directionType)
     {
-        IsSuccess = isSuccess;
-        DetachmentType = detachmentType;
+        var parent = GetParent(parentType);
+        var cubeObj = GetCubeFace(directionType)?.gameObject;
+        var t = cubeObj.transform;
+        Vector3 pos = t.position;
+        Quaternion rot = t.rotation;
+
+        t.SetParent(parent);
+
+        t.position = pos;
+        t.rotation = rot;
+    }
+    #endregion
+
+    public void SetCubesPos(Vector3 pos)
+    {
+        _rotateParent.position = pos;
+        _reverseRotateParent.position = pos;
+        _unRotateParent.position = pos;
+    }
+
+    public void SetCubesRot(Quaternion rot)
+    {
+        _rotateParent.rotation = rot;
+        _reverseRotateParent.rotation = rot;
+        _unRotateParent.rotation = rot;
+    }
+
+    public void ResetAllCubeTile()
+    {
+        // 全ての面の親子関係をリセットし、色もデフォルトに戻す
+        _playerFaces.ForEach(x =>
+        {
+            x.transform.SetParent(_rotateParent);
+            x.SetColor(_defaultColor);
+            x.ResetTransform();
+        });
     }
 }
