@@ -12,6 +12,8 @@
 ギミックの新規追加(ジャンプ・テレポート)
 2026/2/9~2026/2/20
 
+技術構成・設計変更  
+2026/3/21~2026/3/29
 
 # 開発環境
 |  Tools  |  Version  |
@@ -25,6 +27,16 @@
 |  UniRx  |  7.1.0  |
 |  UniTask  |  2.5.10  |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)   |
+
+### V2.0.0以降 　
+|  PakageName  |  Version  |
+| ---- | ---- |
+| R3 | 1.3.0 |
+| NuGetForUnity | 4.5.0 |
+| VContainer | 1.8.0 |
+- リアクティブライブラリを UniRx から R3 へ移行
+- DIコンテナとして VContainer を新規導入
+- 非同期処理は UniTask を継続使用
 
 # 使用アセット
 |  AssetName  |  Version  |
