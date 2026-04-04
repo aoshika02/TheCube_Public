@@ -7,6 +7,9 @@ public class StageSelectModel
     private ReactiveProperty<int> _stageID = new ReactiveProperty<int>(-1);
     private StageSaveManager _stageSaveManager;
 
+    public Observable<int> OnClear => _onClear;
+    private Subject<int> _onClear = new Subject<int>();
+
     public int MinStageID => _minStageID;
     private int _minStageID = 0;
     public int MaxStageID => _maxStageID;
@@ -56,5 +59,11 @@ public class StageSelectModel
 
         UnityEngine.Debug.LogWarning($"ステージセレクトデータ取得失敗: {stageID}");
         return false;
+    }
+
+    public void ClearID()
+    {
+        _stageID.Value = 0;
+        _onClear.OnNext(_stageID.Value);
     }
 }

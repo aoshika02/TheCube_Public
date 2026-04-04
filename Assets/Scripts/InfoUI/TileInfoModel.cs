@@ -5,10 +5,11 @@ using System.Linq;
 
 public class TileInfoModel
 {
-    public Observable<List<TileInfoKey>> OnAddInfo => _onAddInfo;
-    private Subject<List<TileInfoKey>> _onAddInfo = new Subject<List<TileInfoKey>>();
+    public Observable<TileInfo> OnAddInfo => _onAddInfo;
+    private Subject<TileInfo> _onAddInfo = new Subject<TileInfo>();
     private TileInfoDatas _tileInfoDatas;
     private readonly Dictionary<TileType, TileInfoKey> _tileInfoDict = new Dictionary<TileType, TileInfoKey>();
+    private List<TileType> _verifiedTypes = new List<TileType>();
 
     TileType[] _removeSet = new TileType[]
     {
@@ -30,10 +31,17 @@ public class TileInfoModel
          TileType.JumpLeft,
     };
 
-    public TileInfoModel(TileInfoDatas tileInfoDatas)
+    public TileInfoModel(TileInfoDatas tileInfoDatas, List<TileType> tileTypes)
     {
         _tileInfoDatas = tileInfoDatas;
         InitDict();
+
+        if (tileTypes == null || tileTypes.Count == 0)
+        {
+            _verifiedTypes = new List<TileType>();
+            return;
+        }
+        _verifiedTypes = new List<TileType>(tileTypes);
     }
 
     private void InitDict()
@@ -55,6 +63,17 @@ public class TileInfoModel
             .Distinct()
             .Where(x => !_removeSet.Contains(x))
             .ToList();
+
+        bool isVerified = true;
+
+        foreach (var tileType in tileList)
+        {
+            if (!_verifiedTypes.Contains(tileType))
+            {
+                isVerified = false;
+                _verifiedTypes.Add(tileType);
+            }
+        }
 
         bool hasArrow = tileList.Any(x => _removeArrowSet.Contains(x));
         bool hasRightArrow = tileList.Contains(TileType.RightArrow);
@@ -88,7 +107,12 @@ public class TileInfoModel
             }
         }
 
-        _onAddInfo.OnNext(tileInfoKeys);
+        var tileInfo = new TileInfo(
+            isVerified,
+            tileInfoKeys
+            );
+
+        _onAddInfo.OnNext(tileInfo);
     }
 
     private bool GetTileInfoKey(TileType tileType, out TileInfoKey tileInfoKey)
@@ -98,6 +122,28 @@ public class TileInfoModel
             return false;
         }
         return true;
+    }
+
+    public List<TileType> GetVerifiedTypes()
+    {
+        return new List<TileType>(_verifiedTypes);
+    }
+
+    public void ClearVerifiedTypes()
+    {
+        _verifiedTypes.Clear();
+    }
+}
+
+public record TileInfo
+{
+    public readonly bool IsVerified;
+    public List<TileInfoKey> TileInfoKeys;
+
+    public TileInfo(bool isVerified, List<TileInfoKey> tileInfoKeys)
+    {
+        IsVerified = isVerified;
+        TileInfoKeys = tileInfoKeys;
     }
 }
 

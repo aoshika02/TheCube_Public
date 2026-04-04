@@ -13,6 +13,7 @@ public class PlayerMoveProcessor
     private readonly MoveHistory _moveHistory = new();
     private DirectionType _currentBottomDir = DirectionType.Bottom;
     private const float UN_ROTATE_VALUE = 30f;
+    private bool _isCleared = false;
 
     private TileType[] _ignoreTypes = new TileType[]
     {
@@ -112,6 +113,7 @@ public class PlayerMoveProcessor
         switch (result)
         {
             case ResultType.Goal:
+                _isCleared = true;
                 return ResultType.Goal;
             case ResultType.Reset:
                 return ResultType.Reset;
@@ -268,5 +270,8 @@ public class PlayerMoveProcessor
     {
         _moveHistory.Clear();
         _currentBottomDir = DirectionType.Bottom;
+        _isCleared = false;
     }
+
+    public bool IsCleared() => _isCleared;  
 }

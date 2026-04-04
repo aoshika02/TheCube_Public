@@ -44,7 +44,7 @@ public class InGamePresenter : MonoBehaviour
             if (state == GameState.InGameShutdown)
             {
                 _playerMoveProcessor.Reset();
-                _model.ShutDown();
+                _model.ShutDown(_playerMoveProcessor.IsCleared());
                 await _view.ShutDown(destroyCancellationToken);
                 _gameStateManager.ChangeState(GameState.StageSelectInit);
             }

@@ -11,7 +11,23 @@ public class GameLifetimeScope : LifetimeScope
     {
         //model
         builder.RegisterInstance(new DialogModel());
-        builder.Register(_ => new TileInfoModel(_tileInfoDatas), Lifetime.Singleton);
+        builder.Register(resolver =>
+        {
+            var loadManager = resolver.Resolve<LoadManager>();
+
+            TileInfoModel tileInfoModel = null;
+
+            if (loadManager.GetGameSaveData(out var saveData, true))
+            {
+                var verifiedTypes = saveData.VerifiedTypes;
+                tileInfoModel = new TileInfoModel(_tileInfoDatas, verifiedTypes != null ? verifiedTypes.ToList() : null);
+            }
+            else
+            {
+                tileInfoModel = new TileInfoModel(_tileInfoDatas, null);
+            }
+            return tileInfoModel;
+        }, Lifetime.Singleton);
         builder.Register(resolver =>
         {
             var dataSetLoader = resolver.Resolve<DataSetLoader>();
@@ -33,12 +49,12 @@ public class GameLifetimeScope : LifetimeScope
         builder.Register<SaveManager>(Lifetime.Singleton);
         builder.Register(resolver =>
         {
-            var saveLoadManager = resolver.Resolve<LoadManager>();
+            var loadManager = resolver.Resolve<LoadManager>();
             StageSaveManager stageSaveManager = null;
             var datasetLoader = resolver.Resolve<DataSetLoader>();
             var totalStageCount = datasetLoader.GetTotalStageCount();
 
-            if (saveLoadManager.GetGameSaveData(out var gameSaveData, true))
+            if (loadManager.GetGameSaveData(out var gameSaveData, true))
             {
                 stageSaveManager = new StageSaveManager(gameSaveData.StageSaveDatas.ToList(), totalStageCount);
             }
@@ -63,6 +79,7 @@ public class GameLifetimeScope : LifetimeScope
         builder.RegisterComponentInHierarchy<FadeManager>();
 
         //tile
+        builder.Register<TitleModel>(Lifetime.Singleton);
         builder.RegisterComponentInHierarchy<TileManager>();
         builder.RegisterComponentInHierarchy<TilePool>();
         builder.RegisterComponentInHierarchy<InfoViewPool>();
@@ -106,17 +123,17 @@ public class GameLifetimeScope : LifetimeScope
         builder.Register(_ =>
         {
             var locator = new TileAnimLocator(new EmptyTileAnim());
-            locator.Register(TileType.Goal,         new ScaleAnim());
-            locator.Register(TileType.Reset,        new RotateAnim());
-            locator.Register(TileType.Warp,         new ReverseScaleAnim());
-            locator.Register(TileType.UpperArrow,   new ArrowAnim(TileType.UpperArrow));
-            locator.Register(TileType.LeftArrow,    new ArrowAnim(TileType.LeftArrow));
-            locator.Register(TileType.DownArrow,    new ArrowAnim(TileType.DownArrow));
-            locator.Register(TileType.RightArrow,   new ArrowAnim(TileType.RightArrow));
-            locator.Register(TileType.JumpUp,       new BounceAnim());
-            locator.Register(TileType.JumpDown,     new BounceAnim());
-            locator.Register(TileType.JumpLeft,     new BounceAnim());
-            locator.Register(TileType.JumpRight,    new BounceAnim());
+            locator.Register(TileType.Goal, new ScaleAnim());
+            locator.Register(TileType.Reset, new RotateAnim());
+            locator.Register(TileType.Warp, new ReverseScaleAnim());
+            locator.Register(TileType.UpperArrow, new ArrowAnim(TileType.UpperArrow));
+            locator.Register(TileType.LeftArrow, new ArrowAnim(TileType.LeftArrow));
+            locator.Register(TileType.DownArrow, new ArrowAnim(TileType.DownArrow));
+            locator.Register(TileType.RightArrow, new ArrowAnim(TileType.RightArrow));
+            locator.Register(TileType.JumpUp, new BounceAnim());
+            locator.Register(TileType.JumpDown, new BounceAnim());
+            locator.Register(TileType.JumpLeft, new BounceAnim());
+            locator.Register(TileType.JumpRight, new BounceAnim());
             return locator;
         }, Lifetime.Singleton);
     }
@@ -131,19 +148,19 @@ public class GameLifetimeScope : LifetimeScope
             var jumpDistance = 2;
 
             var locator = new TileEventLocator(new EmptyTileEvent(playerCube, tileManager));
-            locator.Register(TileType.Normal,       new NormalTileEvent(playerCube, tileManager));
-            locator.Register(TileType.Goal,         new GoalTileEvent(playerCube, tileManager));
-            locator.Register(TileType.Skip,         new SkipTileEvent(playerCube, tileManager));
-            locator.Register(TileType.Reset,        new ResetTileEvent(playerCube,tileManager));
-            locator.Register(TileType.Warp,         new WarpTileEvent(playerCube, tileManager));
-            locator.Register(TileType.UpperArrow,   new AccelTileEvent(playerCube, tileManager));
-            locator.Register(TileType.LeftArrow,    new AccelTileEvent(playerCube, tileManager));
-            locator.Register(TileType.DownArrow,    new AccelTileEvent(playerCube, tileManager));
-            locator.Register(TileType.RightArrow,   new AccelTileEvent(playerCube, tileManager));
-            locator.Register(TileType.JumpUp,       new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
-            locator.Register(TileType.JumpDown,     new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
-            locator.Register(TileType.JumpLeft,     new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
-            locator.Register(TileType.JumpRight,    new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
+            locator.Register(TileType.Normal, new NormalTileEvent(playerCube, tileManager));
+            locator.Register(TileType.Goal, new GoalTileEvent(playerCube, tileManager));
+            locator.Register(TileType.Skip, new SkipTileEvent(playerCube, tileManager));
+            locator.Register(TileType.Reset, new ResetTileEvent(playerCube, tileManager));
+            locator.Register(TileType.Warp, new WarpTileEvent(playerCube, tileManager));
+            locator.Register(TileType.UpperArrow, new AccelTileEvent(playerCube, tileManager));
+            locator.Register(TileType.LeftArrow, new AccelTileEvent(playerCube, tileManager));
+            locator.Register(TileType.DownArrow, new AccelTileEvent(playerCube, tileManager));
+            locator.Register(TileType.RightArrow, new AccelTileEvent(playerCube, tileManager));
+            locator.Register(TileType.JumpUp, new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
+            locator.Register(TileType.JumpDown, new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
+            locator.Register(TileType.JumpLeft, new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
+            locator.Register(TileType.JumpRight, new JumpTileEvent(playerCube, tileManager, playerCameraMove, jumpDistance));
             return locator;
         }, Lifetime.Singleton);
     }
@@ -153,19 +170,19 @@ public class GameLifetimeScope : LifetimeScope
         builder.Register(resolver =>
         {
             var locator = new MoveCommandLocator(new EmptyMoveCommand());
-            locator.Register(TileType.Normal,       new NormalMoveCommand());
-            locator.Register(TileType.Goal,         new NormalMoveCommand());
-            locator.Register(TileType.Skip,         new NormalMoveCommand());
-            locator.Register(TileType.Reset,        new NormalMoveCommand());
-            locator.Register(TileType.Warp,         new WarpMoveCommand());
-            locator.Register(TileType.UpperArrow,   new AccelMoveCommand());
-            locator.Register(TileType.LeftArrow,    new AccelMoveCommand());
-            locator.Register(TileType.DownArrow,    new AccelMoveCommand());
-            locator.Register(TileType.RightArrow,   new AccelMoveCommand());
-            locator.Register(TileType.JumpUp,       new JumpMoveCommand());
-            locator.Register(TileType.JumpDown,     new JumpMoveCommand());
-            locator.Register(TileType.JumpLeft,     new JumpMoveCommand());
-            locator.Register(TileType.JumpRight,    new JumpMoveCommand());
+            locator.Register(TileType.Normal, new NormalMoveCommand());
+            locator.Register(TileType.Goal, new NormalMoveCommand());
+            locator.Register(TileType.Skip, new NormalMoveCommand());
+            locator.Register(TileType.Reset, new NormalMoveCommand());
+            locator.Register(TileType.Warp, new WarpMoveCommand());
+            locator.Register(TileType.UpperArrow, new AccelMoveCommand());
+            locator.Register(TileType.LeftArrow, new AccelMoveCommand());
+            locator.Register(TileType.DownArrow, new AccelMoveCommand());
+            locator.Register(TileType.RightArrow, new AccelMoveCommand());
+            locator.Register(TileType.JumpUp, new JumpMoveCommand());
+            locator.Register(TileType.JumpDown, new JumpMoveCommand());
+            locator.Register(TileType.JumpLeft, new JumpMoveCommand());
+            locator.Register(TileType.JumpRight, new JumpMoveCommand());
             return locator;
         }, Lifetime.Singleton);
     }
@@ -180,9 +197,9 @@ public class GameLifetimeScope : LifetimeScope
             var playerMoveProcessor = resolver.Resolve<PlayerMoveProcessor>();
             var locator = new InputUIDataLocator(new EmptyInputUICommand());
             locator.Register(GameState.StageSelectIdle, new StageSelectInputUICommand(stageSelectModel));
-            locator.Register(GameState.InGameIdle,      new InGameInputUICommand(playerCube, tileManager,playerMoveProcessor));
+            locator.Register(GameState.InGameIdle, new InGameInputUICommand(playerCube, tileManager, playerMoveProcessor));
             locator.Register(GameState.StageSelectInit, new OtherInputData());
-            locator.Register(GameState.InGameInit,      new OtherInputData());
+            locator.Register(GameState.InGameInit, new OtherInputData());
             return locator;
         }, Lifetime.Singleton);
     }

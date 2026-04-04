@@ -146,4 +146,9 @@ public class StageSelectView : MonoBehaviour
         _tilePool.ReleaseAll();
         _selectTileView.ShutDown();
     }
+
+    public void OnClear(int posX)
+    {
+        _selectTileView.InitScrollData(posX);
+    }
 }

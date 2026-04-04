@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,12 +21,13 @@ public class TileInfoView : MonoBehaviour
         _textDataset = textDataset;
     }
 
-    public void AddInfoViews(List<TileInfoKey> tileInfoKeys)
+    public async UniTask AddInfoViews(List<TileInfoKey> tileInfoKeys, CancellationToken token = default)
     {
         foreach (var infoKey in tileInfoKeys)
         {
             AddInfoView(infoKey.TileType, infoKey.DialogEventType);
         }
+        await UniTask.Yield(cancellationToken: token);
         RebuildLayout();
     }
 
@@ -37,13 +40,14 @@ public class TileInfoView : MonoBehaviour
         _infoViews.Add(infoView);
     }
 
-    public void SetActiveInfo(bool? isActive = null)
+    public async UniTask SetActiveInfo(bool? isActive = null, CancellationToken token = default)
     {
         if (_infoViews == null || _infoViews.Count == 0) return;
         _infoViews.ForEach(x =>
         {
             x.gameObject.SetActive(isActive.HasValue ? isActive.Value : !x.gameObject.activeSelf);
         });
+        await UniTask.Yield(cancellationToken: token);
         RebuildLayout();
     }
 

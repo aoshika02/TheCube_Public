@@ -25,10 +25,16 @@ public class SelectTileView : MonoBehaviour
         _tileData = tileData;
         _frameTexture = frameTexture;
         _tilePool = tilePool;
-        _minPosX = minId;
+        _minPosX = minId * moveLength;
         _maxPosX = maxID * moveLength;
-        _edgeDir = 0;
-        _edgeScrollCount = currentID >= _maxPosX ? 1 : currentID <= _minPosX ? -1 : 0;
+        var startPosX = currentID * moveLength;
+        InitScrollData(startPosX);
+    }
+
+    public void InitScrollData(int posX)
+    {
+        _edgeDir = posX >= _maxPosX - HALF_VIEW ? 1 : posX <= _minPosX + HALF_VIEW ? -1 : 0;
+        _edgeScrollCount = _edgeDir == 0 ? 0 : _edgeDir == 1 ? _maxPosX - posX : posX;
     }
 
     public void Scroll(int dir)
@@ -104,8 +110,6 @@ public class SelectTileView : MonoBehaviour
             _tileObjs.Add(new SelectTileInfo(startPosX, obj));
             startPosX++;
         }
-        _edgeDir = (posX == _minPosX) ? -1 : (posX == _maxPosX) ? 1 : 0;
-        _edgeScrollCount = 0;
     }
 
     private bool MaxLimitCheck(int posX)

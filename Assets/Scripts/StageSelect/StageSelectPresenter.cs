@@ -69,6 +69,7 @@ public class StageSelectPresenter : MonoBehaviour
             if (_ != 1) return;
             if (_gameStateManager.State.CurrentValue != GameState.StageSelectIdle) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
+            _gameStateManager.SetInputState(GameInputState.Moving);
             await _view.SceneChangeFlow(_model.StageID.CurrentValue, false, destroyCancellationToken);
             _gameStateManager.ChangeState(GameState.StageSelectShutdown);
         }).AddTo(this);
@@ -78,7 +79,9 @@ public class StageSelectPresenter : MonoBehaviour
             if (_ != 1) return;
             if (_gameStateManager.State.CurrentValue != GameState.StageSelectIdle) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
+            _gameStateManager.SetInputState(GameInputState.Moving);
             await _view.UnMoveFlow(destroyCancellationToken);
+            _gameStateManager.SetInputState(GameInputState.Other);
         }).AddTo(this);
 
         _inputManager.KeyA.Subscribe(_ =>
@@ -101,6 +104,11 @@ public class StageSelectPresenter : MonoBehaviour
             _gameStateManager.SetInputState(GameInputState.Moving);
             _model.AddStageID();
             _gameStateManager.RequestInputUIRefresh();
+        }).AddTo(this);
+
+        _model.OnClear.Subscribe(_ =>
+        {
+            _view.OnClear(_);
         }).AddTo(this);
     }
 }

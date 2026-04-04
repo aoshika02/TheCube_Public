@@ -26,4 +26,9 @@ public class TutorialManager
         _gameStateManager.InputState.CurrentValue == GameInputState.Other);
         _isFinished = true;
     }
+
+    public void SetTutorialFinished(bool isFinish)
+    {
+        _isFinished = isFinish;
+    }
 }

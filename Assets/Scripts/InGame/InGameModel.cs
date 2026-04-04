@@ -43,10 +43,10 @@ public class InGameModel
         _tileManager.ClearDetachmentType();
     }
 
-    public void ShutDown()
+    public void ShutDown(bool isCleared)
     {
         _tileManager.ClearActiveTile();
-        _stageSaveManager.SetSaveData(_stageSelectModel.StageID.CurrentValue, true);
+        _stageSaveManager.SetSaveData(_stageSelectModel.StageID.CurrentValue, isCleared);
         if (_saveManager.Save(_stageSelectModel.StageID.CurrentValue))
         {
             _loadManager.ClearCache();

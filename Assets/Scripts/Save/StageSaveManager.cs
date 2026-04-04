@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class StageSaveManager
@@ -67,6 +68,14 @@ public class StageSaveManager
     public List<StageSaveData> GetAllSaveData()
     {
         return new List<StageSaveData>(_stageSaveDataDic.Values);
+    }
+
+    public void ClearSaveData()
+    {
+        foreach (var key in _stageSaveDataDic.Keys.ToList())
+        {
+            _stageSaveDataDic[key] = new StageSaveData(key, false, 0);
+        }
     }
 }
 

@@ -8,9 +8,7 @@ public class TitlePresenter : MonoBehaviour
     private GameStateManager _gameStateManager;
     private FadeManager _fadeManager;
     private InputManager _inputManager;
-    private SaveManager _saveManager;
-    private LoadManager _loadManager;
-    private DialogModel _dialogModel;
+    private TitleModel _model;
     private bool _isLoading = false;
     [SerializeField] private GameObject _titleRoot;
     [SerializeField] private TitleCamera _titleCamera;
@@ -19,17 +17,13 @@ public class TitlePresenter : MonoBehaviour
     public void Construct(
         GameStateManager gameStateManager,
         FadeManager fadeManager,
-        SaveManager saveManager,
-        LoadManager loadManager,
         InputManager inputManager,
-        DialogModel dialogModel)
+        TitleModel model)
     {
         _gameStateManager = gameStateManager;
         _fadeManager = fadeManager;
-        _saveManager = saveManager;
-        _loadManager = loadManager;
         _inputManager = inputManager;
-        _dialogModel = dialogModel;
+        _model = model;
         Bind();
     }
 
@@ -54,26 +48,20 @@ public class TitlePresenter : MonoBehaviour
             _isLoading = false;
         }).AddTo(this);
 
-        _inputManager.Space.Subscribe(async x =>
+        _inputManager.Space.Where(x => x == 1).SubscribeAwait(async (x, ct) =>
         {
-            if (x != 1) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
             if (_gameStateManager.State.CurrentValue != GameState.TitleIdle) return;
             if (_isLoading) return;
             _isLoading = true;
             await _fadeManager.FadeOut();
             _gameStateManager.ChangeState(GameState.TitleShutdown);
-        }).AddTo(this);
+        }, AwaitOperation.Drop).AddTo(this);
 
-        _inputManager.KeyX.Subscribe(x =>
+        _inputManager.KeyX.Where(x => x == 1).Subscribe(x =>
         {
-            if (x != 1) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
-            if (_saveManager.DeleteSaveData())
-            {
-                _loadManager.ClearCache();
-                _dialogModel.AddDialog(DialogEventType.DeleteSaveData);
-            }
+            _model.DeleteSaveData();
         }).AddTo(this);
     }
 }

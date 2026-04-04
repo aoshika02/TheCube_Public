@@ -22,29 +22,33 @@ public class PlayerMoveInput : MonoBehaviour
     }
     private void Bind()
     {
-        _inputManager.KeyW.Subscribe(async _ =>
+        _inputManager.KeyW
+            .Where(x => x == 1)
+            .SubscribeAwait(async (x, ct) =>
         {
-            if (_ != 1) return;
             await OnInput(Vector2Int.up);
-        }).AddTo(this);
+        }, AwaitOperation.Drop).AddTo(this);
 
-        _inputManager.KeyS.Subscribe(async _ =>
+        _inputManager.KeyS
+            .Where(x => x == 1)
+            .SubscribeAwait(async (x, ct) =>
         {
-            if (_ != 1) return;
             await OnInput(Vector2Int.down);
-        }).AddTo(this);
+        }, AwaitOperation.Drop).AddTo(this);
 
-        _inputManager.KeyA.Subscribe(async _ =>
+        _inputManager.KeyA
+            .Where(x => x == 1)
+            .SubscribeAwait(async (x, ct) =>
         {
-            if (_ != 1) return;
             await OnInput(Vector2Int.left);
-        }).AddTo(this);
+        }, AwaitOperation.Drop).AddTo(this);
 
-        _inputManager.KeyD.Subscribe(async _ =>
+        _inputManager.KeyD
+            .Where(x => x == 1)
+            .SubscribeAwait(async (x, ct) =>
         {
-            if (_ != 1) return;
             await OnInput(Vector2Int.right);
-        }).AddTo(this);
+        }, AwaitOperation.Drop).AddTo(this);
     }
 
     private async UniTask OnInput(Vector2Int moveDir)

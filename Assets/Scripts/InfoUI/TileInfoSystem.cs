@@ -1,12 +1,14 @@
 using UnityEngine;
 using R3;
 using VContainer;
+using System.Threading;
 
 public class TileInfoSystem : MonoBehaviour
 {
     private InputManager _inputManager;
     private GameStateManager _gameStateManager;
     private TileInfoModel _tileInfoModel;
+    private CancellationTokenSource _cts = new CancellationTokenSource();
     [SerializeField] private TileInfoView _tileInfoView;
 
     [Inject]
@@ -29,24 +31,37 @@ public class TileInfoSystem : MonoBehaviour
     {
         _gameStateManager.State.Subscribe(state =>
         {
+            if (state == GameState.InGameInit)
+            {
+                _cts?.Cancel();
+                _cts?.Dispose();
+                _cts = new CancellationTokenSource();
+            }
+
             if (state == GameState.InGameShutdown)
             {
                 _tileInfoView.ClearInfoViews();
+                _cts?.Cancel();
+                _cts?.Dispose();
+                _cts = null;
             }
         }).AddTo(this);
 
-        _tileInfoModel.OnAddInfo.Subscribe(infoList =>
+        _tileInfoModel.OnAddInfo.Subscribe(async info =>
         {
-            _tileInfoView.AddInfoViews(infoList);
-            _tileInfoView.SetActiveInfo(false);
+            await _tileInfoView.AddInfoViews(info.TileInfoKeys, _cts.Token);
+            await _tileInfoView.SetActiveInfo(!info.IsVerified, _cts.Token);
         }).AddTo(this);
 
-        _inputManager.KeyE.Subscribe(x =>
+        _inputManager.KeyE.Where(x => x == 1)
+        .SubscribeAwait(async (x, ct) =>
         {
-            if (x != 1) return;
-            if(_gameStateManager.State.CurrentValue != GameState.InGameIdle) return;
+            if (_gameStateManager.State.CurrentValue != GameState.InGameIdle) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
-            _tileInfoView.SetActiveInfo();
-        }).AddTo(this);
+            _gameStateManager.SetInputState(GameInputState.Moving);
+            await _tileInfoView.SetActiveInfo(token: _cts.Token);
+            _gameStateManager.SetInputState(GameInputState.Other);
+        }, AwaitOperation.Drop)
+        .RegisterTo(destroyCancellationToken);
     }
 }

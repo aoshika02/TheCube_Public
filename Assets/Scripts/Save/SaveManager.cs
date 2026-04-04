@@ -10,14 +10,16 @@ public class SaveManager
     private TutorialManager _tutorialManager;
     private LoadManager _loadManager;
     private SavePath _savePath;
+    private TileInfoModel _tileInfoModel;
 
     [Inject]
-    public void Construct(StageSaveManager stageSaveManager, LoadManager loadManager, SavePath savePath, TutorialManager tutorialManager)
+    public void Construct(StageSaveManager stageSaveManager, LoadManager loadManager, SavePath savePath, TutorialManager tutorialManager,TileInfoModel tileInfoModel)
     {
         _stageSaveManager = stageSaveManager;
         _loadManager = loadManager;
         _savePath = savePath;
         _tutorialManager = tutorialManager;
+        _tileInfoModel = tileInfoModel;
     }
     public bool Save(int stageIndex)
     {
@@ -92,7 +94,8 @@ public class SaveManager
             outSaveData = new GameSaveData(
                 _tutorialManager.IsFinished,
                 stageIndex,
-                _stageSaveManager.GetAllSaveData()
+                _stageSaveManager.GetAllSaveData(),
+                _tileInfoModel.GetVerifiedTypes()
                 );
         }
         catch (Exception e)

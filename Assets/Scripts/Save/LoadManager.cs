@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using VContainer;
 
 public class LoadManager
 {
@@ -47,12 +46,14 @@ public record GameSaveData
     public bool IsTutorialFinished;
     public int LastStageID;
     public ReadOnlyCollection<StageSaveData> StageSaveDatas;
+    public ReadOnlyCollection<TileType> VerifiedTypes;
 
     public GameSaveData() { }
-    public GameSaveData(bool tutorialFinished, int lastStageID, List<StageSaveData> stageSaveDatas)
+    public GameSaveData(bool tutorialFinished, int lastStageID, List<StageSaveData> stageSaveDatas,List<TileType> tileTypes)
     {
         IsTutorialFinished = tutorialFinished;
         LastStageID = lastStageID;
         StageSaveDatas = stageSaveDatas.AsReadOnly();
+        VerifiedTypes = tileTypes.AsReadOnly();
     }
 }
