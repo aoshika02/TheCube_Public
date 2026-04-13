@@ -46,6 +46,7 @@ public class StageSelectModel
     {
         if (GetStageSaveData(stageID, out var stageSaveData))
         {
+            _stageID.Value = stageID;
             _onIndexUpdate.OnNext(stageSaveData);
         }
     }

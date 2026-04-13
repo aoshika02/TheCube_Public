@@ -38,7 +38,7 @@ public class InGamePresenter : MonoBehaviour
                 await _view.InitializeAsync(_model.StartID, destroyCancellationToken);
                 await _tutorialManager.TutorialFlow();
                 _gameStateManager.ChangeState(GameState.InGameIdle);
-                _gameStateManager.SetInputState(GameInputState.Other);
+                _gameStateManager.ChangeInputState(GameInputState.Other);
             }
 
             if (state == GameState.InGameShutdown)

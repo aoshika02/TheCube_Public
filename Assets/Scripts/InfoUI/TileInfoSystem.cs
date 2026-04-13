@@ -58,9 +58,9 @@ public class TileInfoSystem : MonoBehaviour
         {
             if (_gameStateManager.State.CurrentValue != GameState.InGameIdle) return;
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
-            _gameStateManager.SetInputState(GameInputState.Moving);
+            _gameStateManager.ChangeInputState(GameInputState.Moving);
             await _tileInfoView.SetActiveInfo(token: _cts.Token);
-            _gameStateManager.SetInputState(GameInputState.Other);
+            _gameStateManager.ChangeInputState(GameInputState.Other);
         }, AwaitOperation.Drop)
         .RegisterTo(destroyCancellationToken);
     }

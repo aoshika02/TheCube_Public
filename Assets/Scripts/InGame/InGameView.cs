@@ -14,6 +14,11 @@ public class InGameView : MonoBehaviour
     private float _startPosY = 0;
     private Vector3 _startPos;
     private float _moveParDuration = 0.1f;
+    [SerializeField] private ResultView _resultView;
+    private float _scaleDuration = 0.3f;
+    private float _delay = 0.2f;
+    private float _duration = 0.5f;
+    private float _showTime = 1f;
 
     [Inject]
     public void Construct(TilePool tilePool, TileManager tileManager, PlayerCube playerCube, PlayerCamera playerCameraMove, FadeManager fadeManager)
@@ -23,6 +28,7 @@ public class InGameView : MonoBehaviour
         _playerCube = playerCube;
         _playerCameraMove = playerCameraMove;
         _fadeManager = fadeManager;
+        _resultView.Initialize();
     }
 
     public async UniTask InitializeAsync(int startID, CancellationToken token)
@@ -55,9 +61,11 @@ public class InGameView : MonoBehaviour
 
     public async UniTask ShutDown(CancellationToken token)
     {
+        await _resultView.ShowFlow(_delay, _scaleDuration, _duration, _showTime, token);
         await _fadeManager.FadeOut(token: token);
         _playerCube.ResetAllCubeTile();
         _playerCameraMove.SetCameraActive(false);
         _tilePool.ReleaseAll();
+        _resultView.Shutdown();
     }
 }

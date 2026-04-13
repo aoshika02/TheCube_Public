@@ -31,9 +31,9 @@ public class GameLifetimeScope : LifetimeScope
         builder.Register(resolver =>
         {
             var dataSetLoader = resolver.Resolve<DataSetLoader>();
-            var maxStageID = dataSetLoader.GetTotalStageCount() - 1;
+            var maxStageID = dataSetLoader.GetMaxStageID();
             var stageSaveManager = resolver.Resolve<StageSaveManager>();
-            int stageID = 0;
+            int stageID = dataSetLoader.GetMinStageID();
             if (resolver.Resolve<LoadManager>().GetGameSaveData(out var saveData, true))
             {
                 stageID = saveData.LastStageID;
@@ -51,16 +51,16 @@ public class GameLifetimeScope : LifetimeScope
         {
             var loadManager = resolver.Resolve<LoadManager>();
             StageSaveManager stageSaveManager = null;
-            var datasetLoader = resolver.Resolve<DataSetLoader>();
-            var totalStageCount = datasetLoader.GetTotalStageCount();
+            var dataSetLoader = resolver.Resolve<DataSetLoader>();
+            var maxStageID = dataSetLoader.GetMaxStageID();
 
             if (loadManager.GetGameSaveData(out var gameSaveData, true))
             {
-                stageSaveManager = new StageSaveManager(gameSaveData.StageSaveDatas.ToList(), totalStageCount);
+                stageSaveManager = new StageSaveManager(gameSaveData.StageSaveDatas.ToList(), maxStageID);
             }
             else
             {
-                stageSaveManager = new StageSaveManager(0, totalStageCount);
+                stageSaveManager = new StageSaveManager(dataSetLoader.GetMinStageID(), maxStageID);
             }
             return stageSaveManager;
         }, Lifetime.Singleton);
@@ -108,6 +108,23 @@ public class GameLifetimeScope : LifetimeScope
 
         //stage select
         builder.RegisterComponentInHierarchy<StageSelectPresenter>();
+        builder.RegisterComponentInHierarchy<SelectJumpPresenter>();
+        builder.RegisterComponentInHierarchy<SelectJumpView>();
+        builder.Register(resolver =>
+        {
+            var selectJumpView = resolver.Resolve<SelectJumpView>();
+            var columnCount = selectJumpView.GetColumnCount();
+            var dataSetLoader = resolver.Resolve<DataSetLoader>();
+            var minStageID = dataSetLoader.GetMinStageID();
+            var maxStageID = dataSetLoader.GetMaxStageID();
+            var stageSelectModel = resolver.Resolve<StageSelectModel>();
+            //選択状況をセーブする場合は、セーブデータから取得する
+            var currentStageID = dataSetLoader.GetMinStageID(); ;
+            selectJumpView.Initialized(maxStageID - minStageID + 1, currentStageID);
+            var selectJumpModel = new SelectJumpModel(columnCount, minStageID, maxStageID, currentStageID, stageSelectModel);
+            return selectJumpModel;
+        }, Lifetime.Singleton);
+        builder.RegisterComponentInHierarchy<StageSelectIconUIPresenter>();
 
         //initialize
         builder.RegisterComponentInHierarchy<GameInitialize>();
@@ -195,11 +212,13 @@ public class GameLifetimeScope : LifetimeScope
             var tileManager = resolver.Resolve<TileManager>();
             var stageSelectModel = resolver.Resolve<StageSelectModel>();
             var playerMoveProcessor = resolver.Resolve<PlayerMoveProcessor>();
+            var selectJumpModel = resolver.Resolve<SelectJumpModel>();
             var locator = new InputUIDataLocator(new EmptyInputUICommand());
             locator.Register(GameState.StageSelectIdle, new StageSelectInputUICommand(stageSelectModel));
             locator.Register(GameState.InGameIdle, new InGameInputUICommand(playerCube, tileManager, playerMoveProcessor));
             locator.Register(GameState.StageSelectInit, new OtherInputData());
             locator.Register(GameState.InGameInit, new OtherInputData());
+            locator.Register(SubGameState.SelectJump, new StageJumpUICommand(selectJumpModel));
             return locator;
         }, Lifetime.Singleton);
     }

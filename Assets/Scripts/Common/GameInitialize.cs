@@ -12,6 +12,7 @@ public class GameInitialize : MonoBehaviour
     }
     void Start()
     {
+        _gameStateManager.ChangeSubState(SubGameState.Other);
         _gameStateManager.ChangeState(GameState.TitleInit);
     }
 }

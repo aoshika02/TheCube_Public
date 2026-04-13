@@ -11,6 +11,11 @@ public class IconUI : MonoBehaviour
         _iconImage.color = iconColorData.IconColor;
         _keyBG.color = iconColorData.KeyBGColor;
     }
+
+    public void SetTexture(Sprite iconTexture)
+    {
+        _iconImage.sprite = iconTexture;
+    }
 }
 
 public record IconColorData 

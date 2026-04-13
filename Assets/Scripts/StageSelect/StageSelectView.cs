@@ -15,11 +15,12 @@ public class StageSelectView : MonoBehaviour
     private DataSetLoader _dataLoader;
     private PlayerCube _playerCube;
     private FadeManager _fadeManager;
+    private GameStateManager _gameStateManager;
     private Transform _playerCubeTransform;
     private bool _isCallOnce = false;
     private float _tweenDelay = 0.25f;
 
-    public void Initialized(TilePool tilePool, TileManager tileManager, DataSetLoader dataLoader, PlayerCube playerCube, FadeManager fadeManager, int stageID)
+    public void Initialized(TilePool tilePool, TileManager tileManager, DataSetLoader dataLoader, PlayerCube playerCube, FadeManager fadeManager, GameStateManager gameStateManager, int stageID)
     {
         _isCallOnce = false;
         _tilePool = tilePool;
@@ -27,24 +28,36 @@ public class StageSelectView : MonoBehaviour
         _dataLoader = dataLoader;
         _playerCube = playerCube;
         _fadeManager = fadeManager;
+        _gameStateManager = gameStateManager;
         _playerCubeTransform = _playerCube.GetParent(ParentType.Rotate);
         _selectCameraManager.Init(_playerCube, stageID * _moveLength);
 
         _selectTileView.Initialized(
             _dataLoader.GetTileDataSet(TileType.Normal),
             _dataLoader.GetFrameTexture(), _tilePool,
-            0,
-            _dataLoader.GetTotalStageCount() - 1,
+            _dataLoader.GetMinStageID(),
+            _dataLoader.GetMaxStageID(),
             _moveLength,
             stageID);
     }
 
-    public async UniTask UpdateStagePreviewAsync(int stageID, bool isClear, CancellationToken token)
+    public async UniTask UpdateStagePreviewAsync(StageSaveData stageSaveData, CancellationToken token)
     {
         await _stagePreview.ShowStagePreview(false, token: token);
-        SetStagePreview(stageID, isClear);
-        await MoveFlow(stageID * _moveLength > _playerCubeTransform.position.x ? Vector2Int.right : Vector2Int.left, token);
+        SetStagePreview(stageSaveData.StageID, stageSaveData.IsCleared);
+        await MoveFlow(stageSaveData, _moveDuration / _moveLength, token);
         await _stagePreview.ShowStagePreview(true, token: token);
+    }
+
+    public async UniTask SelectJumpFlow(StageSaveData stageSaveData, CancellationToken token)
+    {
+        await _fadeManager.FadeOut(token: token);
+        _gameStateManager.ChangeSubState(SubGameState.Other);
+        SetStagePreview(stageSaveData.StageID, stageSaveData.IsCleared);
+        var targetPosX = stageSaveData.StageID * _moveLength;
+        var moveDistance = Mathf.Abs(targetPosX - _playerCubeTransform.position.x);
+        await MoveFlow(stageSaveData, _moveDuration / moveDistance, token);
+        await _fadeManager.FadeIn(token: token);
     }
 
     public void SetStagePreview(int stageID, bool isClear)
@@ -64,17 +77,20 @@ public class StageSelectView : MonoBehaviour
 
     public async UniTask UnMoveFlow(CancellationToken token)
     {
-        await CubeMoveUtil.UnMoveFlow(_playerCubeTransform, Vector2Int.down, moveTime: _moveDuration,token: token);
+        await CubeMoveUtil.UnMoveFlow(_playerCubeTransform, Vector2Int.down, moveTime: _moveDuration, token: token);
     }
 
-    public async UniTask MoveFlow(Vector2Int moveDir, CancellationToken token)
+    public async UniTask MoveFlow(StageSaveData stageSaveData, float duration, CancellationToken token)
     {
-        for (int i = 0; i < _moveLength; i++)
+        var targetPosX = stageSaveData.StageID * _moveLength;
+        var moveDir = targetPosX > _playerCubeTransform.position.x ? Vector2Int.right : Vector2Int.left;
+        var moveDistance = Mathf.Abs(targetPosX - _playerCubeTransform.position.x);
+        for (int i = 0; i < moveDistance; i++)
         {
             Vector3 moveTarget = CubeMoveUtil.GetNextPos(_playerCubeTransform, moveDir);
             Quaternion targetRot = CubeMoveUtil.GetNextQuaternion(_playerCubeTransform, moveDir);
             _selectTileView.Scroll(moveDir.x);
-            await CubeMoveUtil.MoveFlowAsync(_playerCubeTransform, moveTarget, targetRot, _moveDuration / _moveLength, token);
+            await CubeMoveUtil.MoveFlowAsync(_playerCubeTransform, moveTarget, targetRot, duration, token);
         }
     }
 
@@ -115,7 +131,7 @@ public class StageSelectView : MonoBehaviour
                 isFromInGame? 0:previewPos.z)
         };
         await UniTask.WhenAll(
-        CubeDoPath(_playerCubeTransform,path, isFromInGame ? _tweenDelay : 0f, token: token),
+        CubeDoPath(_playerCubeTransform, path, isFromInGame ? _tweenDelay : 0f, token: token),
         _stagePreview.BounceAnim(isFromInGame, isFromInGame ? 0f : _tweenDelay, token: token));
         if (isFromInGame == false)
         {

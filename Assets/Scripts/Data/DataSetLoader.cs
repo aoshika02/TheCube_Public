@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine;
 using VContainer;
 
@@ -45,14 +46,14 @@ public class DataSetLoader : MonoBehaviour
         return _gameMasterData.FrameTexture;
     }
 
-    public int GetTotalStageCount()
+    public int GetMinStageID()
     {
-        if (_gameMasterData == null)
-        {
-            Debug.LogWarning("GameMasterData が初期化されていません");
-            return 0;
-        }
-        return _gameMasterData.StageDataSets.Count;
+        return _gameMasterData != null ? _gameMasterData.GetMinStageID() : 0;
+    }
+
+    public int GetMaxStageID()
+    {
+        return _gameMasterData != null ? _gameMasterData.GetMaxStageID() : 0;
     }
 }
 
@@ -66,7 +67,7 @@ public class GameMasterData
     {
         FrameTexture = tileInitDatas.FrameTexture;
 
-        foreach(var tileInitData in tileInitDatas.TileInitDataList)
+        foreach (var tileInitData in tileInitDatas.TileInitDataList)
         {
             TileDataSets.TryAdd(
                 tileInitData.TileType,
@@ -110,7 +111,7 @@ public class GameMasterData
 
     public TileDataSet GetTileDataSet(TileType tileType)
     {
-        if(TileDataSets.TryGetValue(tileType, out var tileDataSet))
+        if (TileDataSets.TryGetValue(tileType, out var tileDataSet))
         {
             return tileDataSet;
         }
@@ -120,43 +121,63 @@ public class GameMasterData
             return null;
         }
     }
-}
 
-public record StageDataSet 
-{
-    public readonly int StageID;
-    public readonly int StartID;
-    public ReadOnlyCollection<ReadOnlyCollection<TileType>> TileTypeData;
-
-    public StageDataSet(int stageID, int startID, List<List<TileType>> tileTypeData)
+    public int GetMinStageID()
     {
-        StageID = stageID;
-        StartID = startID;
-        var readOnlyTileTypeData = new List<ReadOnlyCollection<TileType>>();
-        foreach (var row in tileTypeData)
+        if (StageDataSets.Count == 0)
         {
-            readOnlyTileTypeData.Add(new ReadOnlyCollection<TileType>(row));
+            Debug.LogWarning("StageDataSets が空です");
+            return 0;
         }
-        TileTypeData = new ReadOnlyCollection<ReadOnlyCollection<TileType>>(readOnlyTileTypeData);
+        return StageDataSets.Keys.ToList().Min();
     }
 
- 
-}
-
-public record TileDataSet 
-{
-    public readonly TileType TileType;
-    public readonly Texture2D IconTexture;
-    public readonly Color BaseColor;
-    public readonly Color FrameColor;
-    public readonly Color IconColor;
-
-    public TileDataSet(TileType tileType, Texture2D iconTexture, Color baseColor, Color frameColor, Color iconColor)
+    public int GetMaxStageID()
     {
-        TileType = tileType;
-        IconTexture = iconTexture;
-        BaseColor = baseColor;
-        FrameColor = frameColor;
-        IconColor = iconColor;
+        if (StageDataSets.Count == 0)
+        {
+            Debug.LogWarning("StageDataSets が空です");
+            return 0;
+        }
+        return StageDataSets.Keys.ToList().Max();
     }
 }
+
+    public record StageDataSet
+    {
+        public readonly int StageID;
+        public readonly int StartID;
+        public ReadOnlyCollection<ReadOnlyCollection<TileType>> TileTypeData;
+
+        public StageDataSet(int stageID, int startID, List<List<TileType>> tileTypeData)
+        {
+            StageID = stageID;
+            StartID = startID;
+            var readOnlyTileTypeData = new List<ReadOnlyCollection<TileType>>();
+            foreach (var row in tileTypeData)
+            {
+                readOnlyTileTypeData.Add(new ReadOnlyCollection<TileType>(row));
+            }
+            TileTypeData = new ReadOnlyCollection<ReadOnlyCollection<TileType>>(readOnlyTileTypeData);
+        }
+
+
+    }
+
+    public record TileDataSet
+    {
+        public readonly TileType TileType;
+        public readonly Texture2D IconTexture;
+        public readonly Color BaseColor;
+        public readonly Color FrameColor;
+        public readonly Color IconColor;
+
+        public TileDataSet(TileType tileType, Texture2D iconTexture, Color baseColor, Color frameColor, Color iconColor)
+        {
+            TileType = tileType;
+            IconTexture = iconTexture;
+            BaseColor = baseColor;
+            FrameColor = frameColor;
+            IconColor = iconColor;
+        }
+    }

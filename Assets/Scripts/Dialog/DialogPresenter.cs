@@ -40,7 +40,7 @@ public class DialogPresenter : MonoBehaviour
         _dialogModel.OnAddDialog.Subscribe(async _ =>
         {
             if (_gameStateManager.InputState.CurrentValue == GameInputState.Dialog) return;
-            _gameStateManager.SetInputState(GameInputState.Dialog);
+            _gameStateManager.ChangeInputState(GameInputState.Dialog);
             await _dialogView.ShowDialog(Vector3.one, token: destroyCancellationToken);
             while (_dialogModel.HasDialog())
             {
@@ -56,7 +56,7 @@ public class DialogPresenter : MonoBehaviour
             }
             await _dialogView.ShowDialog(Vector3.zero, token: destroyCancellationToken);
             _dialogView.SetText(string.Empty);
-            _gameStateManager.SetInputState(GameInputState.Other);
+            _gameStateManager.ChangeInputState(GameInputState.Other);
         }).AddTo(this);
     }
 }

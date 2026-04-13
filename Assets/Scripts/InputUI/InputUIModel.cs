@@ -12,6 +12,7 @@ public class InputUIModel
         switch (gameState)
         {
             case GameState.TitleInit:
+            case GameState.TitleIdle:
 
                 _onChangeActiveData.OnNext(new InputUIActiveData(
                     UpActive: false,
@@ -20,6 +21,7 @@ public class InputUIModel
                     RightActive: false));
                 break;
             case GameState.StageSelectInit:
+            case GameState.StageSelectIdle:
 
                 _onChangeActiveData.OnNext(new InputUIActiveData(
                     UpActive: true,
@@ -28,6 +30,7 @@ public class InputUIModel
                     RightActive: true));
                 break;
             case GameState.InGameInit:
+            case GameState.InGameIdle:
 
                 _onChangeActiveData.OnNext(new InputUIActiveData(
                     UpActive: true,

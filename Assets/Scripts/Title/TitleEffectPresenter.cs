@@ -19,6 +19,7 @@ public class TitleEffectPresenter : MonoBehaviour
 
     private void Bind()
     {
+        var cts = new CancellationTokenSource();
         _gameStateManager.State.Subscribe(state =>
         {
             if (state == GameState.TitleInit)
@@ -27,20 +28,13 @@ public class TitleEffectPresenter : MonoBehaviour
                 _titleEffectView.SetEffectRootActive(true);
                 _titleEffectView.SetCameraActive(true);
 
-                var cts = new CancellationTokenSource();
 
                 _titleEffectView.TitleEffectFlow(cts.Token).Forget();
-
-                _gameStateManager.State
-                    .Skip(1)
-                    .Where(s => s != GameState.TitleIdle)
-                    .Take(1)
-                    .Subscribe(_ => cts.Cancel())
-                    .AddTo(this);
             }
 
             if(state == GameState.TitleShutdown)
             {
+                cts.Cancel();
                 _titleEffectView.SetEffectRootActive(false);
                 _titleEffectView.SetCameraActive(false);
                 _gameStateManager.ChangeState(GameState.StageSelectInit);

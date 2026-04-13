@@ -37,7 +37,7 @@ public class TitlePresenter : MonoBehaviour
                 _titleRoot.SetActive(true);
                 await _fadeManager.FadeIn(token: destroyCancellationToken);
                 _gameStateManager.ChangeState(GameState.TitleIdle);
-                _gameStateManager.SetInputState(GameInputState.Other);
+                _gameStateManager.ChangeInputState(GameInputState.Other);
             }
             else if (state == GameState.TitleShutdown)
             {

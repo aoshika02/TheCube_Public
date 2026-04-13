@@ -85,6 +85,11 @@ public class TitleEffectView : MonoBehaviour
         {
             Debug.LogWarning(ex);
         }
+        finally
+        {
+            _playerCube.gameObject.SetActive(true);
+            _cameraTransform.rotation = Quaternion.Euler(_initCameraRot);
+        }
     }
 
     private async UniTask CubeEffectFlow(TitleRoute titleRoute, CancellationToken token)
