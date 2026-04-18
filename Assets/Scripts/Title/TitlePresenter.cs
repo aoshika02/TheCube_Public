@@ -61,6 +61,7 @@ public class TitlePresenter : MonoBehaviour
         _inputManager.KeyX.Where(x => x == 1).Subscribe(x =>
         {
             if (_gameStateManager.InputState.CurrentValue != GameInputState.Other) return;
+            if (_gameStateManager.State.CurrentValue != GameState.TitleIdle) return;
             _model.DeleteSaveData();
         }).AddTo(this);
     }
